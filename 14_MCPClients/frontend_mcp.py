@@ -1,19 +1,15 @@
-##############################################################################
-# Code kept as it is without any changes as streamlit is primarily synch lib #
-##############################################################################
-
 import queue
 import uuid
 
 import streamlit as st
-from backend_mcp import chatbot, retrieve_all_threads, submit_async_task
+from backend import chatbot, retrieve_all_threads, submit_async_task
 from langchain_core.messages import AIMessage, HumanMessage, ToolMessage
 
 # =========================== Utilities ===========================
 def generate_thread_id():
     return uuid.uuid4()
 
-
+    
 def reset_chat():
     thread_id = generate_thread_id()
     st.session_state["thread_id"] = thread_id
@@ -119,11 +115,11 @@ if user_input:
                     tool_name = getattr(message_chunk, "name", "tool")
                     if status_holder["box"] is None:
                         status_holder["box"] = st.status(
-                            f"🔧 Using `{tool_name}` …", expanded=True
+                            f"Using `{tool_name}` …", expanded=True
                         )
                     else:
                         status_holder["box"].update(
-                            label=f"🔧 Using `{tool_name}` …",
+                            label=f"Using `{tool_name}` …",
                             state="running",
                             expanded=True,
                         )
@@ -137,7 +133,7 @@ if user_input:
         # Finalize only if a tool was actually used
         if status_holder["box"] is not None:
             status_holder["box"].update(
-                label="✅ Tool finished", state="complete", expanded=False
+                label="Tool finished", state="complete", expanded=False
             )
 
     # Save assistant message

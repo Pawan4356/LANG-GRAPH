@@ -1,24 +1,16 @@
-##############################################################################
-# Code kept as it is without any changes as streamlit is primarily synch lib #
-##############################################################################
-
 from langgraph.graph import StateGraph, START, END
 from typing import TypedDict, Annotated
 from langchain_core.messages import BaseMessage, HumanMessage
-from langchain_openai import ChatOpenAI
+from langchain_huggingface import ChatHuggingFace, HuggingFaceEndpoint
 from langgraph.checkpoint.sqlite.aio import AsyncSqliteSaver
 from langgraph.graph.message import add_messages
 from langgraph.prebuilt import ToolNode, tools_condition
 from langchain_community.tools import DuckDuckGoSearchRun
 from langchain_core.tools import tool, BaseTool
 from langchain_mcp_adapters.client import MultiServerMCPClient
-from dotenv import load_dotenv
-import aiosqlite
-import requests
-import asyncio
-import threading
+from dotenv import load_dotenv; load_dotenv()
+import aiosqlite, requests, asyncio, threading, os
 
-load_dotenv()
 
 # Dedicated async loop for backend tasks
 _ASYNC_LOOP = asyncio.new_event_loop()
@@ -42,7 +34,13 @@ def submit_async_task(coro):
 # -------------------
 # 1. LLM
 # -------------------
-llm = ChatOpenAI()
+llm = ChatHuggingFace(
+    llm=HuggingFaceEndpoint(
+        repo_id="deepseek-ai/DeepSeek-R1",
+        task="text-generation",
+        huggingfacehub_api_token=os.getenv('HF_TOKEN')
+    )
+)
 
 # -------------------
 # 2. Tools
